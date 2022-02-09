@@ -1,5 +1,5 @@
 import {Component, OnInit} from '@angular/core';
-import {DynamicFormControl} from "./dynamicFormControl";
+import {FormControlAdapter} from "../FormControlAdapter";
 import {FormBuilder, NG_VALUE_ACCESSOR} from "@angular/forms";
 import {takeUntil} from "rxjs";
 
@@ -15,7 +15,7 @@ import {takeUntil} from "rxjs";
     }
   ]
 })
-export class FullNameControllerComponent extends DynamicFormControl implements OnInit {
+export class FullNameControllerComponent extends FormControlAdapter implements OnInit {
   constructor(private readonly formBuilder: FormBuilder) {
     super(
       formBuilder.group({

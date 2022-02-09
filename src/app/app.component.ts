@@ -14,16 +14,16 @@ export class AppComponent implements OnInit {
       fullName: ['', Validators.required],
       bachelorPeriod: ['', Validators.required],
       militaryServicePeriod: ['', Validators.required],
-      dastan: [{value: null}, Validators.required],
+      dastan: [{value: null, disabled: true}, Validators.required],
     })
   }
 
   ngOnInit(): void {
     this.formGroup.valueChanges.subscribe(console.log)
 
-    // setTimeout(() => {
-    //   this.formGroup.controls['dastan'].enable();
-    // }, 2000)
+    setTimeout(() => {
+      this.formGroup.controls['dastan'].enable();
+    }, 2000)
   }
 
 }

@@ -6,15 +6,10 @@ import {Component, OnDestroy} from "@angular/core";
   template: '',
 })
 // eslint-disable-next-line @angular-eslint/component-class-suffix
-export abstract class DynamicFormControl implements ControlValueAccessor, OnDestroy {
-  private _form?: FormGroup;
-
+export abstract class FormControlAdapter implements ControlValueAccessor, OnDestroy {
   protected subscribeAll: Subject<null>;
 
   public get form(): FormGroup {
-    if (!this._form) {
-      throw Error(`from ${DynamicFormControl.name}, form has not been initialized`);
-    }
     return this._form;
   }
 
@@ -29,12 +24,13 @@ export abstract class DynamicFormControl implements ControlValueAccessor, OnDest
   private onTouched = () => {
   };
 
-  protected constructor(newForm: FormGroup) {
+  protected constructor(private _form: FormGroup) {
     this.subscribeAll = new Subject<null>();
-    this.form = newForm;
+    this.callRegisteredFunctions();
   }
 
   private callRegisteredFunctions(): void {
+    console.log('called')
     this.form.valueChanges.pipe(takeUntil(this.subscribeAll)).subscribe((value) => {
       this.onChange(value);
       this.markAsTouched();

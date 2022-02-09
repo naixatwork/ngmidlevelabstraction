@@ -1,8 +1,8 @@
-import {DynamicFormControl} from "./dynamicFormControl"
+import {FormControlAdapter} from "./FormControlAdapter"
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 
 describe("DynamicFormControl", () => {
-  class MockDynamicFormControl extends DynamicFormControl {
+  class MockDynamicFormControl extends FormControlAdapter {
     constructor() {
       super(new FormGroup({}));
     }
@@ -23,8 +23,8 @@ describe("DynamicFormControl", () => {
   })
 })
 
-describe("Form's features of DynamicFormControl", () => {
-  class MockDynamicFormControl extends DynamicFormControl {
+describe("Form's features of FormControlAdapter", () => {
+  class MockDynamicFormControl extends FormControlAdapter {
     constructor() {
       super(
         new FormGroup({
@@ -48,7 +48,6 @@ describe("Form's features of DynamicFormControl", () => {
   })
 
   it('should have a "test" control', () => {
-    expect(control).toBeTruthy();
     expect(control).toBeInstanceOf(FormControl);
   })
 
@@ -64,11 +63,5 @@ describe("Form's features of DynamicFormControl", () => {
 
   it('should be invalid if control is invalid', () => {
     expect(form.invalid).toBeTrue();
-  })
-
-  it('should be touched if control is touched', () => {
-    control.setValue(seed);
-    expect(control.touched).toBeTrue();
-    expect(form.touched).toBeTrue();
   })
 })
