@@ -2,5 +2,11 @@
   <app-double-text formControlName="fullName"></app-double-text>
   <app-range-picker formControlName="bachelorPeriod"></app-range-picker>
   <app-range-picker formControlName="militaryServicePeriod"></app-range-picker>
-  <app-full-name-controller formControlName="dastan"></app-full-name-controller>
+
+  <div class="container">
+    <mat-form-field appearance="fill">
+      <mat-label>Outline form field</mat-label>
+      <app-full-name-controller formControlName="dastan"></app-full-name-controller>
+    </mat-form-field>
+  </div>
 </form>

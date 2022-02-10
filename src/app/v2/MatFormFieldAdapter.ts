@@ -39,7 +39,12 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
   focused = false;
 
   get empty() {
-    return !!this.form.value;
+    for (const value of Object.values(this.form.value)) {
+      if (!!value) {
+        return false
+      }
+    }
+    return true;
   }
 
   @HostBinding('class.floating')
@@ -87,10 +92,10 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     private _form: FormGroup,
     private focusMonitor: FocusMonitor,
     private elementElementRef: ElementRef<HTMLElement>,
-    @Optional() @Self() public ngControl: NgControl
+    @Optional() @Self() public ngControl: NgControl,
   ) {
     focusMonitor.monitor(elementElementRef.nativeElement, true).subscribe(origin => {
-      console.log(origin);
+      this.focused = !!origin;
       this.stateChanges.next();
     });
   }

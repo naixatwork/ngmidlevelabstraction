@@ -24,7 +24,7 @@ export abstract class FormControlAdapter implements ControlValueAccessor, OnDest
   private onTouched = () => {
   };
 
-  protected constructor(private _form: FormGroup) {
+  protected constructor(protected _form: FormGroup) {
     this.subscribeAll = new Subject<null>();
     this.callRegisteredFunctions();
   }
