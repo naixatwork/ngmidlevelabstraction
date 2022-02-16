@@ -1,14 +1,11 @@
 import {MatFormFieldControl} from "@angular/material/form-field";
 import {FormGroup, NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
-import {Component, ElementRef, HostBinding, Input, OnDestroy, Optional, Self} from "@angular/core";
+import {Component, Directive, ElementRef, HostBinding, Input, OnDestroy, Optional, Self} from "@angular/core";
 import {FocusMonitor} from "@angular/cdk/a11y";
 import {coerceBooleanProperty} from '@angular/cdk/coercion'
 
-@Component({
-  template: ''
-})
-// eslint-disable-next-line @angular-eslint/component-class-suffix
+@Directive()
 export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, OnDestroy {
   public get form(): FormGroup {
     return this._form;
@@ -20,8 +17,13 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   readonly stateChanges = new Subject<void>();
 
+  get value() {
+    return this.form.value;
+  }
+
   set value(value: T) {
     this.form.patchValue(value);
+    this.stateChanges.next();
   }
 
   private _placeholder = '';
@@ -81,13 +83,6 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   @Input() userAriaDescribedBy = '';
 
-  setDescribedByIds(ids: string[]): void {
-    this.userAriaDescribedBy = ids.join(' ');
-  }
-
-  onContainerClick(event: MouseEvent) {
-  }
-
   protected constructor(
     private _form: FormGroup,
     private focusMonitor: FocusMonitor,
@@ -98,6 +93,14 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
       this.focused = !!origin;
       this.stateChanges.next();
     });
+  }
+
+  setDescribedByIds(ids: string[]): void {
+    // todo(accessibility): ids returns an empty string it doesnt work
+    this.userAriaDescribedBy = ids.join(' ');
+  }
+
+  onContainerClick(event: MouseEvent) {
   }
 
   ngOnDestroy(): void {

@@ -1,11 +1,8 @@
 import {ControlValueAccessor, FormGroup} from "@angular/forms";
 import {Subject, takeUntil} from "rxjs";
-import {Component, OnDestroy} from "@angular/core";
+import {Directive, OnDestroy} from "@angular/core";
 
-@Component({
-  template: '',
-})
-// eslint-disable-next-line @angular-eslint/component-class-suffix
+@Directive()
 export abstract class FormControlAdapter implements ControlValueAccessor, OnDestroy {
   protected subscribeAll: Subject<null>;
 
@@ -30,7 +27,6 @@ export abstract class FormControlAdapter implements ControlValueAccessor, OnDest
   }
 
   private callRegisteredFunctions(): void {
-    console.log('called')
     this.form.valueChanges.pipe(takeUntil(this.subscribeAll)).subscribe((value) => {
       this.onChange(value);
       this.markAsTouched();
