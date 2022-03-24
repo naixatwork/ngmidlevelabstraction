@@ -3,7 +3,7 @@ import {Subject, takeUntil} from "rxjs";
 import {Directive, OnDestroy} from "@angular/core";
 
 @Directive()
-export abstract class FormControlAdapter implements ControlValueAccessor, OnDestroy {
+export class FormControlAdapter implements ControlValueAccessor, OnDestroy {
   protected subscribeAll: Subject<null>;
 
   public get form(): FormGroup {
@@ -21,7 +21,7 @@ export abstract class FormControlAdapter implements ControlValueAccessor, OnDest
   private onTouched = () => {
   };
 
-  protected constructor(protected _form: FormGroup) {
+  constructor(protected _form: FormGroup) {
     this.subscribeAll = new Subject<null>();
     this.callRegisteredFunctions();
   }

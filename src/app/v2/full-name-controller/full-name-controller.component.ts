@@ -1,8 +1,9 @@
-import {Component, ElementRef, HostBinding, OnInit, Optional, Self} from '@angular/core';
+import {Component, ElementRef, HostBinding, Injector, OnInit, Optional, Self} from '@angular/core';
 import {FormBuilder, NgControl} from "@angular/forms";
 import {MatFormFieldControl} from "@angular/material/form-field";
 import {FocusMonitor} from "@angular/cdk/a11y";
 import {MatFormFieldAdapter} from "../MatFormFieldAdapter";
+import {FormControlAdapter} from "../FormControlAdapter";
 
 @Component({
   selector: 'app-full-name-controller',
@@ -19,18 +20,13 @@ import {MatFormFieldAdapter} from "../MatFormFieldAdapter";
 export class FullNameControllerComponent extends MatFormFieldAdapter<any> implements OnInit {
   constructor(
     private readonly formBuilder: FormBuilder,
-    focusMonitor: FocusMonitor,
-    elementElementRef: ElementRef<HTMLElement>,
-    @Optional() @Self() public override ngControl: NgControl,
+    private readonly injector: Injector
   ) {
     super(
-      formBuilder.group({
-        first: [''],
-        last: [''],
-      }),
-      focusMonitor,
-      elementElementRef,
-      ngControl
+      'full-name-controller',
+      // todo(medium): create builder for this
+      new FormControlAdapter(formBuilder.group({first: '', last: ''})),
+      injector
     );
   }
 

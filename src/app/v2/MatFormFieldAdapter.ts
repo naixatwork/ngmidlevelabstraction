@@ -1,18 +1,18 @@
 import {MatFormFieldControl} from "@angular/material/form-field";
 import {FormGroup, NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
-import {Component, Directive, ElementRef, HostBinding, Input, OnDestroy, Optional, Self} from "@angular/core";
+import {Directive, ElementRef, HostBinding, Injector, Input, OnDestroy} from "@angular/core";
 import {FocusMonitor} from "@angular/cdk/a11y";
 import {coerceBooleanProperty} from '@angular/cdk/coercion'
+import {FormControlAdapter} from "./FormControlAdapter";
 
 @Directive()
 export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, OnDestroy {
   public get form(): FormGroup {
-    return this._form;
+    return this.formControlAdapter.form;
   }
 
   private static nextId = 0;
-  controlType = 'abstract-mat-form-field';
   @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.nextId++}`;
 
   readonly stateChanges = new Subject<void>();
@@ -83,13 +83,24 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   @Input() userAriaDescribedBy = '';
 
+  private focusMonitor: FocusMonitor;
+  private elementElementRef: ElementRef<HTMLFormElement>;
+  public ngControl: NgControl;
+
   protected constructor(
-    private _form: FormGroup,
-    private focusMonitor: FocusMonitor,
-    private elementElementRef: ElementRef<HTMLElement>,
-    @Optional() @Self() public ngControl: NgControl,
+    public readonly controlType: string,
+    private readonly formControlAdapter: FormControlAdapter,
+    injector: Injector,
   ) {
-    focusMonitor.monitor(elementElementRef.nativeElement, true).subscribe(origin => {
+    {
+      this.ngControl = injector.get(NgControl);
+      this.ngControl.valueAccessor = formControlAdapter;
+    }
+    {
+      this.focusMonitor = injector.get(FocusMonitor);
+      this.elementElementRef = injector.get(ElementRef);
+    }
+    this.focusMonitor.monitor(this.elementElementRef.nativeElement, true).subscribe(origin => {
       this.focused = !!origin;
       this.stateChanges.next();
     });
