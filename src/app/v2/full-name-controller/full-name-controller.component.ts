@@ -24,7 +24,7 @@ export class FullNameControllerComponent extends MatFormFieldAdapter<any> implem
   ) {
     super(
       'full-name-controller',
-      // todo(medium): create builder for this
+      // todo(medium): create a factory for this
       new FormControlAdapter(formBuilder.group({first: '', last: ''})),
       injector
     );
@@ -32,7 +32,7 @@ export class FullNameControllerComponent extends MatFormFieldAdapter<any> implem
 
   ngOnInit(): void {
     this.form.valueChanges.subscribe((value) => {
-      // console.log(value)
+      console.log(value)
     })
   }
 }

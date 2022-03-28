@@ -11,7 +11,7 @@ describe("DynamicFormControl", () => {
   const dynamicForm = new MockDynamicFormControl();
 
   it('should create', () => {
-    expect(dynamicForm).toBeTruthy();
+    expect(dynamicForm).toBeDefined();
   })
 
   it('should create with a form', () => {
