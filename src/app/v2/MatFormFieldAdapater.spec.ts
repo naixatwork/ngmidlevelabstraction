@@ -39,7 +39,6 @@ class MockMaterialFormControl extends MatFormFieldAdapter<DummyValue> {
   }
 }
 
-
 describe("MatFormFieldAdapter", () => {
   let component: MockMaterialFormControl;
   let fixture: ComponentFixture<MockMaterialFormControl>;
