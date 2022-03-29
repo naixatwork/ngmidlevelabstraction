@@ -1,29 +1,7 @@
 import {FormControlAdapter} from "./FormControlAdapter"
 import {FormControl, FormGroup, Validators} from "@angular/forms";
 
-describe("DynamicFormControl", () => {
-  class MockDynamicFormControl extends FormControlAdapter {
-    constructor() {
-      super(new FormGroup({}));
-    }
-  }
-
-  const dynamicForm = new MockDynamicFormControl();
-
-  it('should create', () => {
-    expect(dynamicForm).toBeDefined();
-  })
-
-  it('should create with a form', () => {
-    expect(dynamicForm.form).toBeTruthy();
-  })
-
-  it('should have a form with no controls', () => {
-    expect(dynamicForm.form.controls).toEqual({});
-  })
-})
-
-describe("Form's features of FormControlAdapter", () => {
+describe("FormControlAdapter", () => {
   class MockDynamicFormControl extends FormControlAdapter {
     constructor() {
       super(
@@ -45,6 +23,14 @@ describe("Form's features of FormControlAdapter", () => {
 
   beforeEach(() => {
     form.setValue({test: ''})
+  })
+
+  it('should create', () => {
+    expect(dynamicForm).toBeDefined();
+  })
+
+  it('should create with a form', () => {
+    expect(dynamicForm.form).toBeTruthy();
   })
 
   it('should have a "test" control', () => {

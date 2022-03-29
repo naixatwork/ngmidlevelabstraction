@@ -1,5 +1,5 @@
 import {MatFormFieldAdapter} from "./MatFormFieldAdapter";
-import {FormBuilder, FormsModule, NgControl, ReactiveFormsModule} from "@angular/forms";
+import {FormBuilder, FormsModule, NgControl, ReactiveFormsModule, Validators} from "@angular/forms";
 import {Component, Injector} from "@angular/core";
 import {FormControlAdapter} from "./FormControlAdapter";
 import {ComponentFixture, TestBed} from "@angular/core/testing";
@@ -33,7 +33,10 @@ class MockMaterialFormControl extends MatFormFieldAdapter<DummyValue> {
   ) {
     super(
       'mock',
-      new FormControlAdapter(formBuilder.group({dummy: '', dummy2: ''})),
+      new FormControlAdapter(formBuilder.group({
+        dummy: [''],
+        dummy2: ''
+      })),
       injector
     );
   }
@@ -145,4 +148,12 @@ describe("MatFormFieldAdapter", () => {
     component.disabled = true;
     expect(form.disabled).toBeTrue();
   })
+
+  it('should should bind errorState to form.invalid', function () {
+    const {errorState, form} = component;
+    expect(errorState).toBeDefined();
+    expect(errorState).toEqual(form.invalid);
+    form.setErrors({dummy: true})
+    expect(component.errorState).toEqual(form.invalid);
+  });
 });
