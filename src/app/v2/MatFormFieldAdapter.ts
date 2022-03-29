@@ -1,5 +1,5 @@
 import {MatFormFieldControl} from "@angular/material/form-field";
-import {FormGroup, NgControl} from "@angular/forms";
+import {FormControl, FormGroup, NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
 import {Directive, ElementRef, HostBinding, Injector, Input, OnDestroy} from "@angular/core";
 import {FocusMonitor} from "@angular/cdk/a11y";
@@ -8,7 +8,7 @@ import {FormControlAdapter} from "./FormControlAdapter";
 
 @Directive()
 export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, OnDestroy {
-  public get form(): FormGroup {
+  public get form(): FormControlAdapter['form'] {
     return this.formControlAdapter.form;
   }
 
@@ -26,8 +26,8 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     this.stateChanges.next();
   }
 
+  // todo(med): make placeholder accept objects instead of a string
   private _placeholder = '';
-
   @Input()
   get placeholder() {
     return this._placeholder;
@@ -90,7 +90,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   protected constructor(
     public readonly controlType: string,
-    private readonly formControlAdapter: FormControlAdapter,
+    public readonly formControlAdapter: FormControlAdapter,
     injector: Injector,
   ) {
     {
