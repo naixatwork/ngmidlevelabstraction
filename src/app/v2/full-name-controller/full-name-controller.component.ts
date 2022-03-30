@@ -25,7 +25,7 @@ export class FullNameControllerComponent extends MatFormFieldAdapter<any> implem
     super(
       'full-name-controller',
       // todo(medium): create a factory for this
-      new FormControlAdapter(formBuilder.group({first: '', last: ''})),
+      new FormControlAdapter(formBuilder.group({first: 'lol', last: ''})),
       injector
     );
   }

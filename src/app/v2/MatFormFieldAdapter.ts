@@ -5,6 +5,7 @@ import {Directive, ElementRef, HostBinding, Injector, Input, OnDestroy} from "@a
 import {FocusMonitor} from "@angular/cdk/a11y";
 import {coerceBooleanProperty} from '@angular/cdk/coercion'
 import {FormControlAdapter} from "./FormControlAdapter";
+import {By} from "@angular/platform-browser";
 
 @Directive()
 export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, OnDestroy {
@@ -85,7 +86,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   // dependencies
   private focusMonitor: FocusMonitor;
-  private elementElementRef: ElementRef<HTMLFormElement>;
+  private elementRef: ElementRef<HTMLFormElement>;
   public ngControl: NgControl;
 
   protected constructor(
@@ -99,10 +100,10 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     }
     {
       this.focusMonitor = injector.get(FocusMonitor);
-      this.elementElementRef = injector.get(ElementRef);
+      this.elementRef = injector.get(ElementRef);
     }
     {
-      this.focusMonitor.monitor(this.elementElementRef.nativeElement, true).subscribe(origin => {
+      this.focusMonitor.monitor(this.elementRef.nativeElement, true).subscribe(origin => {
         this.focused = !!origin;
         this.stateChanges.next();
       });
@@ -115,10 +116,11 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
   }
 
   onContainerClick(event: MouseEvent) {
+    // todo(high): implement the function
   }
 
   ngOnDestroy(): void {
-    this.focusMonitor.stopMonitoring(this.elementElementRef.nativeElement);
+    this.focusMonitor.stopMonitoring(this.elementRef.nativeElement);
     this.stateChanges.complete()
   }
 }
