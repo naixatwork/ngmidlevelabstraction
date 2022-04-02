@@ -84,7 +84,6 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   @Input() userAriaDescribedBy = '';
 
-  // dependencies
   private focusMonitor: FocusMonitor;
   private elementRef: ElementRef<HTMLFormElement>;
   public ngControl: NgControl;
