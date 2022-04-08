@@ -25,7 +25,7 @@ context('Utilities', () => {
       .should('have.class', 'active')
   })
 
-  it('Cypress.Blob - blob utilities and base64 string conversion', () => {
+  it('Cypress.Blob - blob functions and base64 string conversion', () => {
     // https://on.cypress.io/blob
     cy.get('.utility-blob').then(($div) => {
       // https://github.com/nolanlawson/blob-util#imgSrcToDataURL

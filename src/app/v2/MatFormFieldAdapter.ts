@@ -2,10 +2,11 @@ import {MatFormFieldControl} from "@angular/material/form-field";
 import {FormControl, FormGroup, NgControl} from "@angular/forms";
 import {Subject} from "rxjs";
 import {Directive, ElementRef, HostBinding, Injector, Input, OnDestroy} from "@angular/core";
-import {FocusMonitor} from "@angular/cdk/a11y";
+import {FocusMonitor, FocusOrigin} from "@angular/cdk/a11y";
 import {coerceBooleanProperty} from '@angular/cdk/coercion'
 import {FormControlAdapter} from "./FormControlAdapter";
 import {By} from "@angular/platform-browser";
+import {isObjectEmpty} from "../shared/functions/isObjectEmpty/isObjectEmpty.func";
 
 @Directive()
 export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, OnDestroy {
@@ -13,8 +14,13 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     return this.formControlAdapter.form;
   }
 
-  private static nextId = 0;
-  @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.nextId++}`;
+  private static createdCounter = 0;
+
+  private static increaseCreateCounter(): number {
+    return MatFormFieldAdapter.createdCounter++;
+  }
+
+  @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.increaseCreateCounter()}`;
 
   readonly stateChanges = new Subject<void>();
 
@@ -42,12 +48,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
   focused = false;
 
   get empty() {
-    for (const value of Object.values(this.form.value)) {
-      if (!!value) {
-        return false
-      }
-    }
-    return true;
+    return isObjectEmpty(this.form.value)
   }
 
   @HostBinding('class.floating')
@@ -55,6 +56,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     return this.focused || !this.empty;
   }
 
+  // todo(med): make placeholder accept objects instead of a string
   private _required = false;
   @Input()
   get required() {
@@ -74,8 +76,12 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   set disabled(value: boolean) {
     this._disabled = coerceBooleanProperty(value);
-    this._disabled ? this.form.disable() : this.form.enable();
+    setFormsDisableState.call(this);
     this.stateChanges.next();
+
+    function setFormsDisableState(this: MatFormFieldAdapter<T>) {
+      this._disabled ? this.form.disable() : this.form.enable();
+    }
   }
 
   get errorState(): boolean {
@@ -84,28 +90,45 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   @Input() userAriaDescribedBy = '';
 
-  private focusMonitor: FocusMonitor;
-  private elementRef: ElementRef<HTMLFormElement>;
-  public ngControl: NgControl;
+  private focusMonitor!: FocusMonitor;
+  private elementRef!: ElementRef<HTMLFormElement>;
+  public ngControl!: NgControl;
 
   protected constructor(
     public readonly controlType: string,
     public readonly formControlAdapter: FormControlAdapter,
     injector: Injector,
   ) {
-    {
+    setNgControl.call(this);
+    setFormControlAdapterAsValueAccessor.call(this);
+    setFocusMonitor.call(this);
+    setElementRef.call(this);
+    monitorIfElementIsBeingFocusedOn.call(this);
+
+    function setNgControl(this: MatFormFieldAdapter<T>) {
       this.ngControl = injector.get(NgControl);
+    }
+
+    function setFormControlAdapterAsValueAccessor(this: MatFormFieldAdapter<T>) {
       this.ngControl.valueAccessor = formControlAdapter;
     }
-    {
+
+    function setFocusMonitor(this: MatFormFieldAdapter<T>) {
       this.focusMonitor = injector.get(FocusMonitor);
+    }
+
+    function setElementRef(this: MatFormFieldAdapter<T>) {
       this.elementRef = injector.get(ElementRef);
     }
-    {
-      this.focusMonitor.monitor(this.elementRef.nativeElement, true).subscribe(origin => {
-        this.focused = !!origin;
+
+    function monitorIfElementIsBeingFocusedOn(this: MatFormFieldAdapter<T>) {
+      const setFocusedAndChangeState = (value: FocusOrigin): void => {
+        this.focused = !!value;
         this.stateChanges.next();
-      });
+      }
+
+      this.focusMonitor.monitor(this.elementRef.nativeElement, true)
+        .subscribe(origin => setFocusedAndChangeState(origin));
     }
   }
 
@@ -113,6 +136,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     // todo(accessibility): ids returns an empty string it doesnt work
     this.userAriaDescribedBy = ids.join(' ');
   }
+
 
   onContainerClick(event: MouseEvent) {
     // todo(high): implement the function

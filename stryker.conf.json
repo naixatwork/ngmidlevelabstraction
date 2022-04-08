@@ -17,6 +17,10 @@
       ]
     }
   },
+  "plugins": [
+    "@stryker-mutator/*",
+    "stryker-intellij-reporter"
+  ],
   "reporters": [
     "progress",
     "clear-text",
