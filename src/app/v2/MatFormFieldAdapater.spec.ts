@@ -73,6 +73,7 @@ describe("MatFormFieldAdapter", () => {
   it('should have ngControl with it\'s valueAccessor as FormControlAdapter', () => {
     expect(component.ngControl).toBeDefined();
     expect(component.ngControl.valueAccessor).toBeInstanceOf(FormControlAdapter);
+    expect(component.ngControl.valueAccessor).toEqual(component.formControlAdapter);
   })
 
   it('should change the focused state upon focusing on the control\'s DOM', () => {

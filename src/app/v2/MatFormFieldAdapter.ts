@@ -16,11 +16,11 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   private static createdCounter = 0;
 
-  private static increaseCreateCounter(): number {
-    return MatFormFieldAdapter.createdCounter++;
+  private increaseNumberOfTimesThisClassHasBeenCreated(): void {
+    MatFormFieldAdapter.createdCounter++;
   }
 
-  @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.increaseCreateCounter()}`;
+  @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.createdCounter}`;
 
   readonly stateChanges = new Subject<void>();
 
@@ -104,6 +104,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     setFocusMonitor.call(this);
     setElementRef.call(this);
     monitorIfElementIsBeingFocusedOn.call(this);
+    this.increaseNumberOfTimesThisClassHasBeenCreated();
 
     function setNgControl(this: MatFormFieldAdapter<T>) {
       this.ngControl = injector.get(NgControl);
@@ -136,7 +137,6 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     // todo(accessibility): ids returns an empty string it doesnt work
     this.userAriaDescribedBy = ids.join(' ');
   }
-
 
   onContainerClick(event: MouseEvent) {
     // todo(high): implement the function
