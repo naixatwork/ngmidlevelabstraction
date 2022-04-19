@@ -14,10 +14,12 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     return this.formControlAdapter.form;
   }
 
+  focused = false;
+
   private static createdCounter = 0;
 
-  private increaseNumberOfTimesThisClassHasCreated(): void {
-    MatFormFieldAdapter.createdCounter++;
+  get empty() {
+    return isObjectEmpty(this.form.value)
   }
 
   @HostBinding() readonly id = `${this.controlType}-${MatFormFieldAdapter.createdCounter}`;
@@ -43,12 +45,6 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
   set placeholder(placeholder) {
     this._placeholder = placeholder;
     this.stateChanges.next();
-  }
-
-  focused = false;
-
-  get empty() {
-    return isObjectEmpty(this.form.value)
   }
 
   @HostBinding('class.floating')
@@ -103,35 +99,37 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
       this.ngControl = injector.get(NgControl);
     };
 
-    setNgControl();
-    setFocusMonitor.call(this);
-    setElementRef.call(this);
-    monitorIfElementIsBeingFocusedOn.call(this);
-    this.increaseNumberOfTimesThisClassHasCreated();
+    const setFocusMonitor = () => {
+      this.focusMonitor = injector.get(FocusMonitor);
+    };
 
     const setFormControlAdapterAsValueAccessor = () => {
       this.ngControl.valueAccessor = formControlAdapter;
     };
 
-    setFormControlAdapterAsValueAccessor.call(this);
-
-
-    function setFocusMonitor(this: MatFormFieldAdapter<T>) {
-      this.focusMonitor = injector.get(FocusMonitor);
-    }
-
-    function setElementRef(this: MatFormFieldAdapter<T>) {
+    const setElementRef = () => {
       this.elementRef = injector.get(ElementRef);
-    }
+    };
 
-    function monitorIfElementIsBeingFocusedOn(this: MatFormFieldAdapter<T>) {
+    const monitorIfElementIsBeingFocusedOn = () => {
       const setFocusedAndChangeState = (value: FocusOrigin): void => {
         this.focused = !!value;
         this.stateChanges.next();
       }
 
       this.focusMonitor.monitor(this.elementRef.nativeElement, true).subscribe(setFocusedAndChangeState);
-    }
+    };
+
+    setNgControl();
+    setFocusMonitor();
+    setElementRef();
+    setFormControlAdapterAsValueAccessor();
+    monitorIfElementIsBeingFocusedOn();
+    this.increaseNumberOfTimesThisClassHasCreated();
+  }
+
+  private increaseNumberOfTimesThisClassHasCreated(): void {
+    MatFormFieldAdapter.createdCounter++;
   }
 
   setDescribedByIds(ids: string[]): void {
