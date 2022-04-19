@@ -40,9 +40,6 @@ class MockMaterialFormControl extends MatFormFieldAdapter<DummyValue> {
       injector
     );
   }
-
-  onContainerClickHook(): void {
-  }
 }
 
 describe("MatFormFieldAdapter", () => {

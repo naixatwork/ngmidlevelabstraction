@@ -16,7 +16,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   private static createdCounter = 0;
 
-  private increaseNumberOfTimesThisClassHasBeenCreated(): void {
+  private increaseNumberOfTimesThisClassHasCreated(): void {
     MatFormFieldAdapter.createdCounter++;
   }
 
@@ -24,7 +24,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
 
   readonly stateChanges = new Subject<void>();
 
-  get value() {
+  get value(): T {
     return this.form.value;
   }
 
@@ -99,20 +99,22 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
     public readonly formControlAdapter: FormControlAdapter,
     injector: Injector,
   ) {
-    setNgControl.call(this);
-    setFormControlAdapterAsValueAccessor.call(this);
+    const setNgControl = () => {
+      this.ngControl = injector.get(NgControl);
+    };
+
+    setNgControl();
     setFocusMonitor.call(this);
     setElementRef.call(this);
     monitorIfElementIsBeingFocusedOn.call(this);
-    this.increaseNumberOfTimesThisClassHasBeenCreated();
+    this.increaseNumberOfTimesThisClassHasCreated();
 
-    function setNgControl(this: MatFormFieldAdapter<T>) {
-      this.ngControl = injector.get(NgControl);
-    }
-
-    function setFormControlAdapterAsValueAccessor(this: MatFormFieldAdapter<T>) {
+    const setFormControlAdapterAsValueAccessor = () => {
       this.ngControl.valueAccessor = formControlAdapter;
-    }
+    };
+
+    setFormControlAdapterAsValueAccessor.call(this);
+
 
     function setFocusMonitor(this: MatFormFieldAdapter<T>) {
       this.focusMonitor = injector.get(FocusMonitor);
@@ -128,8 +130,7 @@ export abstract class MatFormFieldAdapter<T> implements MatFormFieldControl<T>, 
         this.stateChanges.next();
       }
 
-      this.focusMonitor.monitor(this.elementRef.nativeElement, true)
-        .subscribe(origin => setFocusedAndChangeState(origin));
+      this.focusMonitor.monitor(this.elementRef.nativeElement, true).subscribe(setFocusedAndChangeState);
     }
   }
 
